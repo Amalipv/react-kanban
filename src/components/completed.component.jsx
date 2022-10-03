@@ -16,7 +16,11 @@ class Completed extends React.Component {
       ],
     };
   }
-
+  removehandler = (id, e) => {
+    this.setState((prevState) => ({
+      cTasks: prevState.cTasks.filter((task) => task.id !== id),
+    }));
+  };
   addElements = () => {
     const task = prompt("Enter the new task");
     const newid = (Date.now() / 1000) | 0;
@@ -30,15 +34,30 @@ class Completed extends React.Component {
     return (
       <div
         className="completed"
-        /* ondrop="drop(event)"
-        ondragover="allowDrop(event)" */
+        onDrop={(e) => {
+          e.preventDefault();
+          const sId = e.dataTransfer.getData("s_id");
+          const sValue = e.dataTransfer.getData("s_value");
+
+          this.setState((prevState) => ({
+            cTasks: [...prevState, { id: sId, value: sValue }],
+          }));
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+        }}
       >
         <h3>Completed</h3>
         <button className="plus" onClick={this.addElements}>
           add a new card
         </button>
         {this.state.cTasks.map(({ id, value }) => (
-          <Item id={id} key={id} value={value} />
+          <Item
+            id={id}
+            key={id}
+            value={value}
+            removeTask={this.removehandler}
+          />
         ))}
       </div>
     );
